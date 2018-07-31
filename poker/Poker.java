@@ -13,20 +13,20 @@ public class Poker {
 	public static final int FIELD = 5;	// フィールド上のカードの枚数
 	public static final int MAXCHALLENGE = 2;	// チャレンジ回数上限
 
-	// ポーカーを動かすクラス
+	// ポーカーを動かしてランク（価値）を返すクラス
 	public int gameStart() {
 		int challengeCount = 0;	// チャレンジ回数カウント用
 		int rank = 0;	// ランク（役のポイント）
 		myDeck.initCard();	// カードを初期化
 
-		myField.displayMsg("first");	// ルールを表示
-		myHand.displayMsg("first");	// 役一覧を表示
+		myField.displayFirstMsg();	// ルールを表示
+		myHand.displayFirstMsg();	// 役一覧を表示
 		myDeck.checkCardsQuantityOnField();	// 未使用の5枚を引く
 		String inputStr = "6";	// 回避用の数字
 
-		// チャレンジ回数が2回になるまで繰り返す
+		// チャレンジ回数が上限になるまで繰り返す
 		while ( challengeCount < MAXCHALLENGE ) {
-			System.out.println((challengeCount+1) + "/2回目のシャッフルです。");
+			System.out.println((challengeCount+1) + "/" + MAXCHALLENGE + "回目のシャッフルです。");
 			// 0が入力されるまで繰り返す
 			while ( myField.inputSorC(inputStr) == false ) {
 				System.out.println("=========");
@@ -57,5 +57,4 @@ public class Poker {
 		}
 		System.out.println("[0] 上記で確定する");
 	}
-
 }

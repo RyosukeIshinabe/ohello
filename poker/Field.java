@@ -57,7 +57,7 @@ public class Field {
 	// CHANGEカードの番号を配列に格納して返す
 	public int[] returnChangeCardNum() {
 		int count = 0;
-		// CHANGEカードの個数をcountに変数に入れる
+		// CHANGEカードの個数をcount変数に入れる
 		for ( int i = 0; i < FIELD; i++ ) {
 			if ( this.sorc[i] == CHANGE ) {
 				count++;
@@ -67,6 +67,7 @@ public class Field {
 		int[] changeList = new int[count];
 		int k = 0;
 
+		// チェンジリストにCHANGEカードの番号を格納する
 		for ( int j = 0; j < FIELD; j++ ) {
 			if ( this.sorc[j] == CHANGE ) {
 				changeList[k] = j;
@@ -88,7 +89,7 @@ public class Field {
 	// STAYorCHANGEの入力を判定する
 	public boolean inputSorC(String inputStr) {
 
-		// 入力された値が0〜5の数字だったらint型で返す（問題があればERROE変数を返す）
+		// 入力された値が0〜5の数字だったらint型で返す（問題があればERROE定数を返す）
 		int inputInt = checkInputInt(inputStr, 0, 6);
 
 		// 条件を満たした数字が入力されるまで繰り返す
@@ -114,7 +115,7 @@ public class Field {
 		}
 	}
 
-	// 入力された値がmin〜maxの数字だったらint型で返す
+	// 入力された値がmin〜maxの数字だったらint型で返す（1桁用）
 	public int checkInputInt(String inputStr, int min, int max) {
 
 		// 入力された文字が数字の1桁だった場合
@@ -137,20 +138,13 @@ public class Field {
 	}
 
 	// 定型文表示
-	public void displayMsg(String timing) {
-		if ( timing == "first" ) {
-			System.out.println("GAME START");
-			System.out.println("[]内の番号を入力してEnterを押すと、STAYとCHANGEを変更できます。");
-			System.out.println("（一度の入力で1枚ずつ指定してください）");
-			System.out.println("確定するには、0を入力してEnterを押してください。");
-			System.out.println("最大2回シャッフルできます。");
-			System.out.println("ジョーカーは入っていません。");
-			System.out.println("=====================");
-		} else if ( timing == "last" ) {
-			System.out.println("END");
-			System.out.println("確定するには、0を入力してEnterを押してください。");
-		}
+	public void displayFirstMsg() {
+		System.out.println("GAME START");
+		System.out.println("[]内の番号を入力してEnterを押すと、STAYとCHANGEを変更できます。");
+		System.out.println("（一度の入力で1枚ずつ指定してください）");
+		System.out.println("確定するには、0を入力してEnterを押してください。");
+		System.out.println("最大2回シャッフルできます。");
+		System.out.println("ジョーカーは入っていません。");
+		System.out.println("=====================");
 	}
-
-
 }

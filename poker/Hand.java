@@ -85,7 +85,6 @@ public class Hand {
 			 sameNumCardList[0] == 1 ) {
 			 return true;
 		}
-
 		return false;
 	}
 
@@ -142,23 +141,16 @@ public class Hand {
 	}
 
 	// 定型文表示
-	public void displayMsg(String timing) {
-		if ( timing == "first" ) {
-			System.out.println("【役一覧】");
-			System.out.println("1ペア：" + rankOfOnePair + "点");
-			System.out.println("2ペア：" + rankOfTwoPair + "点");
-			System.out.println("3カード：" + rankOfThreeCard + "点");
-			System.out.println("ストレート：" + rankOfStraight + "点");
-			System.out.println("フラッシュ：" + rankOfFlush + "点");
-			System.out.println("フルハウス：" + rankOfFullhouse + "点");
-			System.out.println("4カード：" + rankOfFourCard + "点");
-			System.out.println("ストレートフラッシュ：" + rankOfStraightFlush + "点");
-			System.out.println("=====================");
-		} else if ( timing == "last" ) {
-			System.out.println("END");
-			System.out.println("確定するには、0を入力してEnterを押してください。");
-		}
+	public void displayFirstMsg() {
+		System.out.println("【役一覧】");
+		System.out.println("1ペア：" + rankOfOnePair + "点");
+		System.out.println("2ペア：" + rankOfTwoPair + "点");
+		System.out.println("3カード：" + rankOfThreeCard + "点");
+		System.out.println("ストレート：" + rankOfStraight + "点");
+		System.out.println("フラッシュ：" + rankOfFlush + "点");
+		System.out.println("フルハウス：" + rankOfFullhouse + "点");
+		System.out.println("4カード：" + rankOfFourCard + "点");
+		System.out.println("ストレートフラッシュ：" + rankOfStraightFlush + "点");
+		System.out.println("=====================");
 	}
-
-
 }

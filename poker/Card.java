@@ -65,35 +65,35 @@ public class Card {
 
     // changeリストを受け取ってonfieldからusedに変える
     public void changeCard(int[] changeList) {
-	    	int count = 0;
-	    	int[] onFieldListMark = new int[5];
-	    	int[] onFieldListNum = new int[5];
-	    	for ( int j = 0; j < MAXMARK; j++ ) {
-    			for ( int k = 0; k < MAXNUM; k++ ) {
-    				if ( this.status[j][k] == onField ) {
-    					onFieldListMark[count] = j;
-    					onFieldListNum[count] = k;
-    					count++;
-    				}
+	    int count = 0;
+	    int[] onFieldListMark = new int[FIELD];
+	    int[] onFieldListNum = new int[FIELD];
+	    for ( int j = 0; j < MAXMARK; j++ ) {
+    		for ( int k = 0; k < MAXNUM; k++ ) {
+    			if ( this.status[j][k] == onField ) {
+    				onFieldListMark[count] = j;
+    				onFieldListNum[count] = k;
+    				count++;
     			}
-	    	}
-	    	for ( int i = 0; i < changeList.length; i++ ) {
-	    		this.status[onFieldListMark[changeList[i]]][onFieldListNum[changeList[i]]] = used;
-	    	}
+    		}
+	    }
+	    for ( int i = 0; i < changeList.length; i++ ) {
+	    	this.status[onFieldListMark[changeList[i]]][onFieldListNum[changeList[i]]] = used;
+	    }
     }
 
     // カードのステータスを変更する
     public void changeStatus(int mark, int num, int status) {
-	    	// 未使用のデッキに戻す
-	    	if ( status == 0 ) {
-	    		this.status[mark][num] = unused;
-	    	// フィールドに出す
-	    	} else if ( status == 1 ) {
-	    		this.status[mark][num] = onField;
-	    	// 墓場に送る
-	    	} else if ( status == 2 ) {
-	    		this.status[mark][num] = used;
-	    	}
+	    // 未使用のデッキに戻す
+	    if ( status == 0 ) {
+	    	this.status[mark][num] = unused;
+	    // フィールドに出す
+	    } else if ( status == 1 ) {
+	    	this.status[mark][num] = onField;
+	    // 墓場に送る
+	    } else if ( status == 2 ) {
+	    	this.status[mark][num] = used;
+	    }
     }
 
     // カードを全部使い切ったかどうか判定（使い切ればtrue）
@@ -112,58 +112,58 @@ public class Card {
 
     // 指定のカードの状態を返す
     public int getCardStatus(int mark, int num) {
-	    	return this.status[mark][num];
+	    return this.status[mark][num];
     }
 
     // 指定のステータスのカードの枚数を数える
     public int countDesignationStatus(int status) {
-	    	int count = 0;
-	    	for ( int i = 0; i < MAXMARK; i++ ) {
-	            for ( int j = 0; j < MAXNUM; j++ ) {
-	            	// 未使用のカードを数える
-	            	if ( status == 0 ) {
-	            		if ( this.status[i][j] == unused ) {
-	            			count++;
-	            		}
-	            	// フィールド上のカードを数える
-	            	} else if ( status == 1 ) {
-	            		if ( this.status[i][j] == onField ) {
-	            			count++;
-	            		}
-	            	// 墓場のカードを数える
-	           	} else if ( status == 2 ) {
-	            		if ( this.status[i][j] == used ) {
-	            			count++;
-	            		}
-           		}
-            }
-        }
-    	return count;
+	    int count = 0;
+	    for ( int i = 0; i < MAXMARK; i++ ) {
+	        for ( int j = 0; j < MAXNUM; j++ ) {
+	        	// 未使用のカードを数える
+	        	if ( status == 0 ) {
+	        		if ( this.status[i][j] == unused ) {
+	        			count++;
+	        		}
+	            // フィールド上のカードを数える
+	        	} else if ( status == 1 ) {
+	        		if ( this.status[i][j] == onField ) {
+	       			count++;
+	        		}
+	        	// 墓場のカードを数える
+	        	} else if ( status == 2 ) {
+	            	if ( this.status[i][j] == used ) {
+	            		count++;
+	            	}
+	            }
+	        }
+	    }
+	    return count;
     }
 
     // ランダムな値を生成
     public int createRandNum(int max) {
-	    	Random rand = new Random();
+	    Random rand = new Random();
 
-	    	// 0〜3のダンラムな値（マーク用）
-	    	if ( max == MAXMARK ) {
-	    		int randomNumberForMark = rand.nextInt(MAXMARK);
-	    		return randomNumberForMark;
+	    // 0〜3のダンラムな値（マーク用）
+	    if ( max == MAXMARK ) {
+	    	int randomNumberForMark = rand.nextInt(MAXMARK);
+	    	return randomNumberForMark;
 
-	    	// 0〜12のランダムな値（数字用）
-	    	} else if ( max == MAXNUM ) {
-	    		int randomNumberForNum = rand.nextInt(MAXNUM);
-	    		return randomNumberForNum;
+    	// 0〜12のランダムな値（数字用）
+    	} else if ( max == MAXNUM ) {
+    		int randomNumberForNum = rand.nextInt(MAXNUM);
+    		return randomNumberForNum;
 
-	    	} else {
-	    		return 0;
-	    	}
+    	} else {
+    		return 0;
+    	}
     }
 
     // 未使用のカードを引き、ステータスを変更する
     // 未使用のカードがあるかどうかの検証は含まれません。存在が確定後に使用すること
     public void drowCard() {
-    		int randomNumberForMark = createRandNum(MAXMARK);	// マーク用
+    	int randomNumberForMark = createRandNum(MAXMARK);	// マーク用
 		int randomNumberForNum = createRandNum(MAXNUM);	// 数字用
 
 		// そのカードがすでに出ていた場合は繰り返す
@@ -178,72 +178,70 @@ public class Card {
 
     // フィールド上のカードを表示
     public void displayCard() {
-	    	int count = 1;
-	    	for ( int i = 0; i < MAXMARK; i++ ) {
-	    		for ( int j = 0; j < MAXNUM; j++ ) {
-	            	if ( this.status[i][j] == onField ) {
-	            		System.out.print("[" + count + "] ");
-	            		System.out.println(expressCard(i,j));
-	            		count++;
-	            	}
+	    int count = 1;
+	    for ( int i = 0; i < MAXMARK; i++ ) {
+	    	for ( int j = 0; j < MAXNUM; j++ ) {
+	           	if ( this.status[i][j] == onField ) {
+	           		System.out.print("[" + count + "] ");
+	           		System.out.println(expressCard(i,j));
+	           		count++;
+	           	}
 	        }
-	    	}
+	    }
     }
 
     // フィールド上の指定のカードを表示
     public void displayCardOfOne(int designate) {
-	    	int count = 0;
-	    	PARENT:
-	    	for ( int i = 0; i < MAXMARK; i++ ) {
-	    		for ( int j = 0; j < MAXNUM; j++ ) {
-	            	if ( this.status[i][j] == onField ) {
-	            		if ( count == designate ) {
-	            			System.out.print("[" + (count+1) + "] ");
-		            		System.out.print(expressCard(i,j));
-		            		break PARENT;
-	            		} else {
-	            			count++;
-	            		}
-	            	}
-	        }
+	    int count = 0;
+	    PARENT:	// これはアンカー。breakがどこまで戻るかを指定する
+	    for ( int i = 0; i < MAXMARK; i++ ) {
+	    	for ( int j = 0; j < MAXNUM; j++ ) {
+	           	if ( this.status[i][j] == onField ) {
+	           		if ( count == designate ) {
+	           			System.out.print("[" + (count+1) + "] ");
+		           		System.out.print(expressCard(i,j));
+		           		break PARENT;	// アンカー「PARENT:」の所までbreakする
+	           		} else {
+	           			count++;
+	           		}
+	           	}
 	    	}
+	    }
     }
 
     // フィールド上のカードが5枚あるかどうか検証し、なければカードを引く
     public void checkCardsQuantityOnField() {
 
-	    	// status1（フィールド上）のカードを数える
-	    	int countCardOnField = countDesignationStatus(onField);
+	    // status1（フィールド上）のカードを数える
+	    int countCardOnField = countDesignationStatus(onField);
+	    // status2（未使用）のカードの枚数を数える
+		int countCardUnused = countDesignationStatus(unused);
 
-	    	// status2（未使用）のカードの枚数を数える
-			int countCardUnused = countDesignationStatus(unused);
+		// もしフィールド上に足りないカードの枚数が残りの未使用カードを上回ったら
+		if ( FIELD - countCardOnField > countCardUnused ) {
+			// 墓場のカードを未使用に戻しちゃえww
+			restoreUsedCard();
+		}
 
-			// もしフィールド上に足りないカードの枚数が残りの未使用カードを上回ったら
-			if ( FIELD - countCardOnField > countCardUnused ) {
-				// 墓場のカードを未使用に戻しちゃえww
-				restoreUsedCard();
-			}
-
-	    	// status1（フィールド上）のカードが5枚未満だった場合は
-	    	while ( countCardOnField < FIELD ) {
-
-	    		// 5枚になるまでカードを引く
-	    		drowCard();
-	    		countCardOnField++;
-	    	}
+	    // status1（フィールド上）のカードが5枚未満だった場合は
+	    while ( countCardOnField < FIELD ) {
+	    	// 5枚になるまでカードを引く
+	    	drowCard();
+	    	countCardOnField++;
+	    }
     }
 
     // 墓場のカードを未使用に戻す
     public void restoreUsedCard() {
-	    	for ( int i = 0; i < MAXMARK; i++ ) {
-	    		for ( int j = 0; j < MAXNUM; j++ ) {
+	    for ( int i = 0; i < MAXMARK; i++ ) {
+	    	for ( int j = 0; j < MAXNUM; j++ ) {
 
-		            	// ステータスが2のカードを0にする
-		    		if ( this.status[i][j] == used ) {
-		    			changeStatus(i, j, unused);
+	          	// ステータスが2のカードを0にする
+	    		if ( this.status[i][j] == used ) {
+	    			changeStatus(i, j, unused);
 		        }
-	    		}
 	    	}
+	    }
     }
 
 	// フィールド上のカードのうち、（マーク関係なく）それぞれの番号が何枚出ているかを返す
@@ -284,5 +282,4 @@ public class Card {
   		}
   		return count;
   	}
-
 }
