@@ -1,7 +1,7 @@
 package othello;
 import java.util.Scanner;
 
-public class main {
+public class Main {
 
     public static void main(String[] args) {
 
@@ -67,6 +67,8 @@ public class main {
         System.out.println("白のプレイヤー：" + myBoard.aggregateStone(1));
         System.out.println("黒のプレイヤー：" + myBoard.aggregateStone(2));
         System.out.println(myBoard.judgeWinPlayer(myBoard.aggregateStone(1), myBoard.aggregateStone(2)));
+
+        scan.close();
 
     }
 }
