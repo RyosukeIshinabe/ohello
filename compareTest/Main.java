@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// 入力された指示の通りに並べかえを行うプログラムです。
+
 public class Main {
 
 	public static void main(String args[]) {

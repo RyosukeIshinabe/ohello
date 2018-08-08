@@ -2,6 +2,8 @@ package enumTest;
 import java.time.MonthDay;
 import java.util.Scanner;
 
+// 入力された月と日から星座を判別するプログラムです。
+
 public class Main {
     public static void main(String[] args){
 
