@@ -1,7 +1,7 @@
 package compareTest;
 import java.util.Comparator;
 
-public class Employee {
+public class Employee implements Comparable<Employee> {
 	private int number;
 	private String name;
 	private int age;
@@ -32,12 +32,40 @@ public class Employee {
 	}
 
 	// Comparator用の内部クラス
-	public static class employeeComparator implements Comparator<Employee> {
+	public static class EmployeeComparator implements Comparator<Employee> {
+		private int sortWay;	// ソート方法用
 
-		@Override	// 従業員ナンバーを昇順で並べ替え
-		public int compare(Employee employee1, Employee employee2) {
-			return employee1.number - employee2.number;
+		// コンストラクタ（引数でソート方法を受け取リ、sortWay変数に格納）
+		public EmployeeComparator(int inputInt) {
+			this.sortWay = inputInt;
 		}
+
+		@Override
+		public int compare(Employee employee1, Employee employee2) {
+			// メンバ変数sortWayに何が入っているかによってソート方法を指定
+			switch (this.sortWay) {
+				case 0:
+					return employee1.number - employee2.number;
+				case 1:
+					return employee2.number - employee1.number;
+				// 文字列には演算子が使えないため、Stringクラスに予め用意されているcompareToクラスを使う
+				case 2:
+					return employee1.compareTo(employee2);
+				case 3:
+					return employee2.compareTo(employee1);
+				case 4:
+					return employee1.age - employee2.age;
+				case 5:
+					return employee2.age - employee1.age;
+				default:
+					return 0;
+			}
+		}
+	}
+
+	@Override	// 文字列用の大小比較
+	public int compareTo(Employee employee) {
+		return name.compareTo(employee.name);
 	}
 
 	public String toString() {

@@ -2,10 +2,14 @@ package compareTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 // 入力された指示の通りに並べかえを行うプログラムです。
 
 public class Main {
+
+	public static Scanner scan = new Scanner(System.in);	// 入力用クラス
+	private static final int ERROR = -99;
 
 	public static void main(String args[]) {
 
@@ -28,12 +32,38 @@ public class Main {
 		employees.add(sophie);
 		employees.add(angelo);
 
-		// employeeComparatorで定義された通りにソート
-		Collections.sort(employees, new Employee.employeeComparator() );
+		// 入力を代入（何が入力されてもエラーにならないように一旦String型に格納）
+		System.out.println("ソート方法を入力してください");
+		System.out.println("社員番号 [0]昇順 [1]降順");
+		System.out.println("名前　　 [2]昇順 [3]降順");
+		System.out.println("年齢　　 [4]昇順 [5]降順");
+		String inputStr = scan.next();
+		int inputInt = checkInput(inputStr);	// 正規チェックしてint型に変換
+
+		// 条件を満たした数字が入力されるまで繰り返す
+		while ( inputInt == ERROR ) {
+			System.out.println("正しい数字を入力してください");
+			inputStr = scan.next();
+			inputInt = checkInput(inputStr);
+		}
+
+		// employeeComparatorで定義された通りにソート（引数でソート方法を渡す）
+		Collections.sort(employees, new Employee.EmployeeComparator(inputInt) );
 
 		// 表示
 		for (Employee value : employees) {
 			System.out.println(value.toString());
 		}
 	}
+
+	// 入力された値が正しいかチェック
+    public static int checkInput(String inputStr) {
+    	if ( inputStr.matches("^[0-9]{1}$") ) {	// 入力された文字が数字の1桁だった場合
+			int inputInt = Integer.parseInt(inputStr);	// int型に変換
+			if ( 0 <= inputInt && inputInt <= 5 ) {	// 入力された文字が0〜5の間だった場合
+				return inputInt;
+			}
+    	}
+    	return ERROR;
+    }
 }
