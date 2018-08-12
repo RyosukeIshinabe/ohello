@@ -39,7 +39,7 @@ public class Main {
 
 //		// ① なんの省略もなく実装した場合
 //		// インターフェース「CountCharacters」を実装した「countCharactersFunction（匿名クラス）」を作成
-//		// 匿名クラスが使えるのは抽象メソッドが1つだけの場合のみ
+//		// 匿名クラスが使えるのは抽象メソッドが1つだけ（関数型インターフェースと呼ばれる）の場合のみ
 //		CountCharacters countCharactersFunction = new CountCharacters() {
 //
 //			@Override	// インターフェース内の「countCharacters」メソッドをオーバーライド
