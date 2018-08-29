@@ -23,9 +23,9 @@ public class Recorder {
 
 	// ディレクトリ
 	private static final String DIR = System.getProperty("user.home") + "/Desktop/";
-	private static final String PROG = "war_record_prog.csv";	// レコードファイル名
+//	private static final String PROG = "war_record_prog.csv";	// レコードファイル名
 	private static final String PFMC = "war_record_pfmc.csv";	// レコードファイル名
-	private static final String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
+//	private static final String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
 	private static final String PFMC_DIR = DIR + PFMC;	// ディレクトリ + ファイル名
 
 	public Recorder() {
@@ -245,81 +245,6 @@ public class Recorder {
 		System.out.println("これまでの合計勝利回数: " + this.winTimes);
 		System.out.println("勝利時の最大獲得カード枚数: " + this.maxWinCards);
 		System.out.println("---------------------------");
-	}
-
-	// 中断データを読み込む
-	public int[] getProgress() {
-
-		// データの格納場所
-		int cellOfPlayerID = 0;	// プレイヤーIDが格納されている列
-		int cellOfDeckType = 1;	// デッキの種類が格納されている列
-		int cellOfMarkOfCard = 2;	// カードのマークが格納されている列
-		int cellOfNumberOfCard = 3;	// カードの数字が格納されている列
-		Path inputPath = Paths.get(PROG_DIR);	// ファイルのPathを格納
-
-		// ここからファイルを読み込む処理
-		if ( Files.exists(inputPath) ) {	// 読み込むファイルが存在する場合
-			try (
-				// 読み込むテキストファイルを開く
-				BufferedReader inputtedFile = new BufferedReader(new FileReader(PFMC_DIR));
-				) {
-
-					while ( true ) {
-						String line = inputtedFile.readLine();	// 読み込んだデータを1行ずつ取得
-						if (line == null) {	// データが読み込めなければ終了
-				        	break;
-				        }
-
-						String[] cellStr = line.split(",", -1);	// lineを[,]の文字で分割する
-
-						// String配列からint配列に変換
-						int[] cellInt = new int[cellStr.length];
-						for ( int i = 0; i < cellStr.length; i++ ) {
-							cellInt[i] = Integer.parseInt(cellStr[i]);
-						}
-					}
-
-			// 例外処理
-		    } catch (FileNotFoundException e) {
-		      e.printStackTrace();
-		    } catch (IOException e) {
-		      e.printStackTrace();
-		    }
-
-		} else {	// 読み込むファイルが存在しなかった場合
-			init();	// 初期化
-		}
-
-		return cellInt;
-		
-	}
-
-
-	// 中断データを書き込む
-
-
-	// デッキのデータ（1行）を受け取ってプレイヤーのデッキに分配
-	public void roadPlayerDeck(String line) {
-
-		// データの格納場所
-		int cellOfPlayerID = 0;	// プレイヤーIDが格納されている列
-		int cellOfDeckType = 1;	// デッキの種類が格納されている列
-		int cellOfMarkOfCard = 2;	// カードのマークが格納されている列
-		int cellOfNumberOfCard = 3;	// カードの数字が格納されている列
-
-		String[] cellStr = line.split(",", -1);	// lineを[,]の文字で分割する
-
-		// int型配列に変換
-		int[] cellInt = new int[cellStr.length];
-		for ( int i = 1; i < cellStr.length; i++ ) {
-			cellInt[i] = Integer.parseInt(cellStr[i]);
-		}
-
-		if ( cellInt[cellOfPlayerID] == 0 ) {	// 自分のカード
-
-		}
-
-
 	}
 
 }

@@ -5,8 +5,8 @@ public class Field {
 	private final int ALLCARD = 26;
 	private Deck onHoldDeck = new Deck();	// 保留中のカードを格納するデッキ
 	private Deck defaultDeck = new Deck();	// プレイヤーに振り分ける前のデッキ
-	private static int round;	// 第*回戦
-	private static Scanner scan = new Scanner(System.in);	// 入力用クラス
+	private int round;	// 第*回戦
+	private Scanner scan = new Scanner(System.in);	// 入力用クラス
 
 	public Field() {
 		this.onHoldDeck.makeDeck(ALLCARD);	// 保留中のカードを格納するデッキ
@@ -84,17 +84,25 @@ public class Field {
 		return round;
 	}
 
+	// ラウンド数をセット
+	public void setRound(int round) {
+		this.round = round;
+	}
+
 	// ラウンド数を表示してインクリメント
 	public void displayRound() {
 		System.out.println("### 第" + round + "回戦 ###");
 		round++;
 	}
 
-	// 全てのデッキを破棄
-	public void setNulltoAllDeck() {
+	// 保留デッキを破棄
+	public void setNulltoOnHoldDeck() {
 		this.onHoldDeck.setNull();
+	}
+
+	// デフォルトデッキを破棄
+	public void setNulltoDefaultDeck() {
 		this.defaultDeck.setNull();
-		round = 0;
 	}
 
 

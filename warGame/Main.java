@@ -1,4 +1,11 @@
 package warGame;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 public class Main {
@@ -19,7 +26,14 @@ public class Main {
 		recorder = new Recorder();	// レコーダー
 		recorder.getPerformance();	// 過去の成績を読み込む
 		recorder.displayPerformance();	// 成績を表示する
-		dealCard();	// カードを配る
+
+		getProgress();	// 中断データを読み込む
+
+		if ( field.getRound() == 1 ) {	// 中断データがなかった場合
+			dealCard();	// カードを配る
+		} else {	// 中断データがあった場合
+			field.setNulltoDefaultDeck();	// デフォルトデッキを破棄
+		}
 
 		System.out.println("準備が整いました。ゲームを始めます。");
 
@@ -162,7 +176,7 @@ public class Main {
 			System.out.println("同点でした。");
 		}
 
-		field.setNulltoAllDeck();	// 保留中の札を破棄
+		field.setNulltoOnHoldDeck();	// 保留中の札を破棄
 	}
 
 	// 分解済みのデータを受け取って自身のデッキとして保存（分解はrecorderクラスで事前に行う前提）
@@ -174,8 +188,8 @@ public class Main {
 		}
 	}
 
-	// デッキ情報（カード1枚分）をint型配列として受け取って、Playerクラスに譲渡
-	public void passCard(int[] data) {
+	// 中断データを読み込む
+	public static void getProgress() {
 
 		// データの格納場所
 		int cellOfPlayerID = 0;	// プレイヤーIDが格納されている列
@@ -183,11 +197,58 @@ public class Main {
 		int cellOfMarkOfCard = 2;	// カードのマークが格納されている列
 		int cellOfNumberOfCard = 3;	// カードの数字が格納されている列
 
-		if ( data[cellOfPlayerID] == 0 ) {
-			playerOwn.roadDeck(data[cellOfDeckType], data[cellOfMarkOfCard], data[cellOfNumberOfCard]);
-		} else if ( data[cellOfPlayerID] == 1 ) {
-			playerOpp.roadDeck(data[cellOfDeckType], data[cellOfMarkOfCard], data[cellOfNumberOfCard]);
+		// ディレクトリ
+		String DIR = System.getProperty("user.home") + "/Desktop/";
+		String PFMC = "war_record_pfmc.csv";	// レコードファイル名
+		String PFMC_DIR = DIR + PFMC;	// ディレクトリ + ファイル名
+
+		Path inputPath = Paths.get(PFMC_DIR);	// ファイルのPathを格納
+
+		// ここからファイルを読み込む処理
+		if ( Files.exists(inputPath) ) {	// 読み込むファイルが存在する場合
+			try (
+				// 読み込むテキストファイルを開く
+				BufferedReader inputtedFile = new BufferedReader(new FileReader(PFMC_DIR));
+				) {
+
+					while ( true ) {
+						String line = inputtedFile.readLine();	// 読み込んだデータを1行ずつ取得
+						if (line == null) {	// データが読み込めなければ終了
+				        	break;
+				        }
+
+						String[] cellStr = line.split(",", -1);	// lineを[,]の文字で分割する
+
+						// String配列からint配列に変換
+						int[] cellInt = new int[cellStr.length];
+						for ( int i = 0; i < cellStr.length; i++ ) {
+							cellInt[i] = Integer.parseInt(cellStr[i]);
+						}
+
+						// それぞれのプレイヤーにカードを振り分け
+						if ( cellInt[cellOfPlayerID] == 0 ) {	// 自分のカードとして振り分け
+							playerOwn.roadDeck(cellInt[cellOfDeckType], cellInt[cellOfMarkOfCard], cellInt[cellOfNumberOfCard]);
+						} else if ( cellInt[cellOfPlayerID] == 1 ) {	// 相手のカードとして振り分け
+							playerOpp.roadDeck(cellInt[cellOfDeckType], cellInt[cellOfMarkOfCard], cellInt[cellOfNumberOfCard]);
+						}
+					}
+
+					// 全てのカードが振り分けられたあと、playerカードの枚数に応じてラウンドを特定
+					field.setRound(playerOwn.getLengthOfPlayerDeck());
+
+			// 例外処理
+		    } catch (FileNotFoundException e) {
+		      e.printStackTrace();
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+
+		// 中断データが存在しなかった場合
+		} else {
+			System.out.println("中断データは存在しません。");
+			System.out.println("ゲームを最初からスタートします。");
 		}
+
 	}
 
 }
