@@ -1,12 +1,17 @@
 package warGame;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
 	private static Player playerOwn;	// 自分
@@ -16,6 +21,7 @@ public class Main {
 	private static final int PLEYERS = 2;	// 参加するプレイヤー数
 	private static final int PLAYERCARD = 13;	// プレイヤーが持つカード数
 	private static final int ALLCARD = PLEYERS * PLAYERCARD;	// プレイヤーが持つカード数
+	private static Scanner scan = new Scanner(System.in);	// 入力用クラス
 
 	public static void main(String[] args) {
 
@@ -32,7 +38,16 @@ public class Main {
 		if ( field.getRound() == 1 ) {	// 中断データがなかった場合
 			dealCard();	// カードを配る
 		} else {	// 中断データがあった場合
-			field.setNulltoDefaultDeck();	// デフォルトデッキを破棄
+			if ( selectLoadProgressData() ) {	// 中断データを読み込むか聞いて、読み込むなら
+				field.setNulltoDefaultDeck();	// デフォルトデッキを破棄
+			} else {	// 中断データを読み込まないなら
+				System.out.println("中断データを破棄しました。");
+				// プレイヤーデッキ/獲得デッキを破棄した上でカードを配る
+				playerOwn.setNulltoAllDeck();	// デッキを破棄
+				playerOpp.setNulltoAllDeck();	// デッキを破棄
+				field.setRound(1);	// ラウンドをリセット
+				dealCard();	// カードを配る
+			}
 		}
 
 		System.out.println("準備が整いました。ゲームを始めます。");
@@ -46,8 +61,9 @@ public class Main {
 			playerOpp.displayAllDeckInfo();	// 持ち札と獲得札の枚数を表示する
 			field.displayLengthOfOnHoldDeck();	// 保留中の札の枚数を表示する
 
-			if ( field.selectContinue() == false ) {
-				break;	// 札を切りますか？がfalseなら抜ける
+			if ( field.selectContinue() == false ) {	// 札を切りますか？がfalseなら
+				setProgress();	// 中断データをセーブして
+				break;	// 抜ける
 			}
 
 			playerOwn.takeCardAndDisplay();	// 自分のカードを切って表示
@@ -57,17 +73,26 @@ public class Main {
 			int compareResult = playerOwn.getInUseDeck().compareCard(playerOpp.getInUseDeck());
 			treat(compareResult);	// 勝敗に応じた処理
 		}
-		System.out.println("### 最終結果 ###");
 
-		// 獲得したカードの枚数を表示
-		System.out.print("あなた：");
-		playerOwn.displayLengthOfWinDeck();
-		System.out.print("CPU：");
-		playerOpp.displayLengthOfWinDeck();
+		// ゲームが最後まで進んだ場合
+		if ( playerOwn.getLengthOfPlayerDeck() == 0 ) {
+			System.out.println("### 最終結果 ###");
 
-		judgeWinnter();	//勝敗判定
-		recorder.recordPerformance();	// 成績を書き込む
-		recorder.displayPerformance();	// 成績を表示する
+			// 獲得したカードの枚数を表示
+			System.out.print("あなた：");
+			playerOwn.displayLengthOfWinDeck();
+			System.out.print("CPU：");
+			playerOpp.displayLengthOfWinDeck();
+
+			judgeWinnter();	//勝敗判定
+			recorder.recordPerformance();	// 成績を書き込む
+			recorder.displayPerformance();	// 成績を表示する
+
+		// ゲームが最後まで進まずに中断した場合
+		} else {
+			System.out.println("ゲームを中断します。");
+		}
+
 	}
 
 
@@ -106,7 +131,6 @@ public class Main {
 
 	// 勝負の結果による処理
 	public static void treat(int compareResult) {
-
 
 		if ( compareResult == 2 ) {	// 勝利
 			System.out.println("あなたの勝利です！");
@@ -199,16 +223,18 @@ public class Main {
 
 		// ディレクトリ
 		String DIR = System.getProperty("user.home") + "/Desktop/";
-		String PFMC = "war_record_pfmc.csv";	// レコードファイル名
-		String PFMC_DIR = DIR + PFMC;	// ディレクトリ + ファイル名
+		String PROG = "war_record_prog.csv";	// レコードファイル名
+		String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
 
-		Path inputPath = Paths.get(PFMC_DIR);	// ファイルのPathを格納
+		Path inputPath = Paths.get(PROG_DIR);	// ファイルのPathを格納
 
 		// ここからファイルを読み込む処理
 		if ( Files.exists(inputPath) ) {	// 読み込むファイルが存在する場合
+			System.out.println("中断データが存在します。");
+
 			try (
 				// 読み込むテキストファイルを開く
-				BufferedReader inputtedFile = new BufferedReader(new FileReader(PFMC_DIR));
+				BufferedReader inputtedFile = new BufferedReader(new FileReader(PROG_DIR));
 				) {
 
 					while ( true ) {
@@ -248,7 +274,60 @@ public class Main {
 			System.out.println("中断データは存在しません。");
 			System.out.println("ゲームを最初からスタートします。");
 		}
+	}
 
+	// 中断データを書き込む
+	public static void setProgress() {
+
+		// ディレクトリ
+		String DIR = System.getProperty("user.home") + "/Desktop/";
+		String PROG = "war_record_pfmc.csv";	// レコードファイル名
+		String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
+
+		// ここからファイルを書き込む処理
+		try (
+			// 出力するためのファイルを開く（なければ新規作成）
+			// FileWriterクラスのコンストラクタの第2引数… true：追加書き込み　false：上書き
+			PrintWriter outputOwnFile = new PrintWriter(new BufferedWriter(new FileWriter(PROG_DIR, false)));
+			PrintWriter outputOppFile = new PrintWriter(new BufferedWriter(new FileWriter(PROG_DIR, true)));
+			) {
+
+			// 自分のデッキの書き込み（上書きで書き込み）
+			ArrayList<String> ownData = playerOwn.convertFormatOfCsv();	// デッキデータを取得
+			for ( int i = 0; i < ownData.size(); i++ ) {	// ArrayListの行数分繰り返し
+				outputOwnFile.printf(ownData.get(i));	// 1行ずつ書き込み
+			}
+
+			// 相手のデッキの書き込み（追加書き込み）
+			ArrayList<String> OppData = playerOpp.convertFormatOfCsv();	// デッキデータを取得
+			for ( int i = 0; i < OppData.size(); i++ ) {	// ArrayListの行数分繰り返し
+				outputOppFile.printf(OppData.get(i));	// 1行ずつ書き込み
+			}
+
+			System.out.println("成績データの書き込みが完了しました。");
+
+		// 例外処理
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 中断データを読み込むかどうか聞く
+	public static boolean selectLoadProgressData() {
+		System.out.println("中断データを読み込みますか？(y:はい, n:いいえ)");
+		String input = scan.next();	// 入力を代入
+
+		// 条件を満たした値が入力されるまで繰り返す
+		while ( !input.equals("y") && !input.equals("n") ) {
+			System.out.println("入力が正しくありません");
+			input = scan.next();
+		}
+
+		if ( input.equals("y") ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
