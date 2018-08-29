@@ -38,6 +38,11 @@ public class Field {
 		return this.onHoldDeck.getCardFromDeckAndErase(index);
 	}
 
+	// onHoldDeck内の指定の番号のカードを文字で表現する
+	public void displayCardFromOnHoldDeck(int index) {
+		onHoldDeck.displayCardFromDeck(index);
+	}
+
 	/*
 	 *	defaultDeck用
 	 */

@@ -52,6 +52,21 @@ public class Deck {
 		return refuge;	// 避難していたカードをreturn
 	}
 
+	// 自身のデッキから指定された番号のカードのマークを取得する
+	public int getMarkOfCardFromDeck(int index) {
+		return this.deck[index].getMark();
+	}
+
+	// 自身のデッキから指定された番号のカードのナンバーを取得する
+	public int getNumberOfCardFromDeck(int index) {
+		return this.deck[index].getNumber();
+	}
+
+	// 自身のデッキから指定された番号のカードを表示する
+	public void displayCardFromDeck(int index) {
+		System.out.println(deck[index].toString());
+	}
+
 	// 自身のデッキに格納された（null以外の）カードの枚数を取得
 	public int getDeckLength() {
 		int count = 0;
@@ -127,10 +142,13 @@ public class Deck {
 	public ArrayList<String> convertFormatOfCsv(int playerID, int type) {
 		ArrayList<String> data = new ArrayList<>();	// カードの枚数分の行を用意
 		// 全てのカードを順番に取得して、[playerID,type,Mark,Number] の形式でString化
-		for ( int i = 0; i < this.getDeckLength(); i++ ) {
+		for ( int i = 0; i < MAXNUM; i++ ) {
+			if ( getCardFromDeck(i) == null ) {
+				continue;
+			}
 			String line = playerID + "," + type
-						+ "," + this.getCardFromDeck(i).getMark()
-						+ "," + this.getCardFromDeck(i).getNumber()
+						+ "," + getMarkOfCardFromDeck(i)
+						+ "," + getNumberOfCardFromDeck(i)
 						+ "%n";
 			data.add(line);	// 行を追加する
 		}

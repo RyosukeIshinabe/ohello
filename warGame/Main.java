@@ -31,23 +31,32 @@ public class Main {
 		field = new Field();	// フィールド
 		recorder = new Recorder();	// レコーダー
 		recorder.getPerformance();	// 過去の成績を読み込む
-		recorder.displayPerformance();	// 成績を表示する
 
-		getProgress();	// 中断データを読み込む
+		// ディレクトリ
+		String DIR = System.getProperty("user.home") + "/Desktop/";
+		String PROG = "war_record_prog.csv";	// レコードファイル名
+		String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
+		Path path = Paths.get(PROG_DIR);	// ファイルのPathを格納
 
-		if ( field.getRound() == 1 ) {	// 中断データがなかった場合
-			dealCard();	// カードを配る
-		} else {	// 中断データがあった場合
+		if ( Files.exists(path) ) {	// 読み込むファイルが存在する場合
 			if ( selectLoadProgressData() ) {	// 中断データを読み込むか聞いて、読み込むなら
+				System.out.println("中断データを読み込みます。");
+				getProgress();	// 中断データを読み込む
 				field.setNulltoDefaultDeck();	// デフォルトデッキを破棄
-			} else {	// 中断データを読み込まないなら
+			// 中断データを読み込まないなら
+			} else {
+				try {
+					Files.delete(path);	// 中断データを消去
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				System.out.println("中断データを破棄しました。");
-				// プレイヤーデッキ/獲得デッキを破棄した上でカードを配る
-				playerOwn.setNulltoAllDeck();	// デッキを破棄
-				playerOpp.setNulltoAllDeck();	// デッキを破棄
-				field.setRound(1);	// ラウンドをリセット
 				dealCard();	// カードを配る
 			}
+
+		// 中断データがなかった場合
+		} else {
+			dealCard();	// カードを配る
 		}
 
 		System.out.println("準備が整いました。ゲームを始めます。");
@@ -155,7 +164,7 @@ public class Main {
 			playerOwn.setCardToWinDeck(playerOpp.getInUseDeckAndErase());
 
 			// 先に保留中のカードの枚数を取得
-			// for文の()内で毎回取得するとループする度にlengthが変わる？
+			// for文の()内で毎回取得するとループする度にlengthが変わるため？
 			int length = field.getLengthOfOnHoldDeck();
 
 			// 保留中のカードもwinDeckへ（保留は解除する）
@@ -169,8 +178,12 @@ public class Main {
 			playerOpp.setCardToWinDeck(playerOwn.getInUseDeckAndErase());
 			playerOpp.setCardToWinDeck(playerOpp.getInUseDeckAndErase());
 
+			// 先に保留中のカードの枚数を取得
+			// for文の()内で毎回取得するとループする度にlengthが変わるため？
+			int length = field.getLengthOfOnHoldDeck();
+
 			// 保留中のカードもwinDeckへ（保留は解除する）
-			for ( int i = 0; i < field.getLengthOfOnHoldDeck(); i++ ) {
+			for ( int i = 0; i < length; i++ ) {
 				playerOpp.setCardToWinDeck(field.getCardFromOnHoldDeckAndErase(i));
 			}
 		}
@@ -260,7 +273,8 @@ public class Main {
 					}
 
 					// 全てのカードが振り分けられたあと、playerカードの枚数に応じてラウンドを特定
-					field.setRound(playerOwn.getLengthOfPlayerDeck());
+					field.setRound(PLAYERCARD - playerOwn.getLengthOfPlayerDeck() + 1);
+					Files.delete(inputPath);	// 中断データを消去
 
 			// 例外処理
 		    } catch (FileNotFoundException e) {
@@ -274,6 +288,7 @@ public class Main {
 			System.out.println("中断データは存在しません。");
 			System.out.println("ゲームを最初からスタートします。");
 		}
+
 	}
 
 	// 中断データを書き込む
@@ -281,27 +296,23 @@ public class Main {
 
 		// ディレクトリ
 		String DIR = System.getProperty("user.home") + "/Desktop/";
-		String PROG = "war_record_pfmc.csv";	// レコードファイル名
+		String PROG = "war_record_prog.csv";	// レコードファイル名
 		String PROG_DIR = DIR + PROG;	// ディレクトリ + ファイル名
 
 		// ここからファイルを書き込む処理
 		try (
 			// 出力するためのファイルを開く（なければ新規作成）
 			// FileWriterクラスのコンストラクタの第2引数… true：追加書き込み　false：上書き
-			PrintWriter outputOwnFile = new PrintWriter(new BufferedWriter(new FileWriter(PROG_DIR, false)));
-			PrintWriter outputOppFile = new PrintWriter(new BufferedWriter(new FileWriter(PROG_DIR, true)));
+			PrintWriter outputFile = new PrintWriter(new BufferedWriter(new FileWriter(PROG_DIR, false)));
 			) {
 
-			// 自分のデッキの書き込み（上書きで書き込み）
-			ArrayList<String> ownData = playerOwn.convertFormatOfCsv();	// デッキデータを取得
-			for ( int i = 0; i < ownData.size(); i++ ) {	// ArrayListの行数分繰り返し
-				outputOwnFile.printf(ownData.get(i));	// 1行ずつ書き込み
-			}
+			// 自分のデッキと相手のデッキを読み込み
+			ArrayList<String> ownData = playerOwn.convertFormatOfCsv();
+			ArrayList<String> oppData = playerOpp.convertFormatOfCsv();
+			ownData.addAll(oppData);	// 2人のデッキを合体
 
-			// 相手のデッキの書き込み（追加書き込み）
-			ArrayList<String> OppData = playerOpp.convertFormatOfCsv();	// デッキデータを取得
-			for ( int i = 0; i < OppData.size(); i++ ) {	// ArrayListの行数分繰り返し
-				outputOppFile.printf(OppData.get(i));	// 1行ずつ書き込み
+			for ( int i = 0; i < ownData.size(); i++ ) {	// ArrayListの行数分繰り返し
+				outputFile.printf(ownData.get(i));	// 1行ずつ書き込み
 			}
 
 			System.out.println("成績データの書き込みが完了しました。");

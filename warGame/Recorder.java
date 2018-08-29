@@ -185,20 +185,30 @@ public class Recorder {
 				) {
 
 					String line = inputtedFile.readLine();	// 読み込んだデータを1行だけ取得
-					String[] cellStr = line.split(",", -1);	// lineを[,]の文字で分割する
 
-					// String配列からint配列に変換（1行目はStringのままでいいのでスキップ）
-					int[] cellInt = new int[cellStr.length];
-					for ( int i = 1; i < cellStr.length; i++ ) {
-						cellInt[i] = Integer.parseInt(cellStr[i]);
+					// ファイルは存在するが白紙だった場合のためにif文を使用
+					if ( line != null ) {
+						String[] cellStr = line.split(",", -1);	// lineを[,]の文字で分割する
+
+						// String配列からint配列に変換（1行目はStringのままでいいのでスキップ）
+						int[] cellInt = new int[cellStr.length];
+						for ( int i = 1; i < cellStr.length; i++ ) {
+							cellInt[i] = Integer.parseInt(cellStr[i]);
+						}
+
+						// フィールド変数にセット
+						setDateTime(cellStr[cellOfLatestPlayDay]);	// ここだけStrをセット
+						setChallengeTimes(cellInt[cellOfChallengeTimes]);
+						setWinTimes(cellInt[cellOfWinTimes]);
+						setMaxWinCards(cellInt[cellOfMaxWinCards]);
+						System.out.println("成績データの読み込みが完了しました。");
+
+						displayPerformance();	// 成績を表示する
+
+					// ファイルは存在するが白紙だった場合
+					} else {
+						System.out.println("過去の成績データはありませんでした。");
 					}
-
-					// フィールド変数にセット
-					setDateTime(cellStr[cellOfLatestPlayDay]);	// ここだけStrをセット
-					setChallengeTimes(cellInt[cellOfChallengeTimes]);
-					setWinTimes(cellInt[cellOfWinTimes]);
-					setMaxWinCards(cellInt[cellOfMaxWinCards]);
-					System.out.println("成績データの読み込みが完了しました。");
 
 			// 例外処理
 		    } catch (FileNotFoundException e) {
@@ -208,6 +218,7 @@ public class Recorder {
 		    }
 
 		} else {	// 読み込むファイルが存在しなかった場合
+			System.out.println("過去の成績データはありませんでした。");
 			init();	// 初期化
 		}
 	}
